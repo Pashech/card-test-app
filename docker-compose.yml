@@ -1,0 +1,10 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: cards
+      POSTGRES_USER: Pashech
+      POSTGRES_PASSWORD: 123987456
+    ports:
+      - "5432:5432"
