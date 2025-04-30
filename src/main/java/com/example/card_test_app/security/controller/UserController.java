@@ -29,16 +29,6 @@ public class UserController {
         this.authenticationManager = authenticationManager;
     }
 
-    @GetMapping("/user/userProfile")
-    public String userProfile(){
-        return "Hello to user profile";
-    }
-
-    @GetMapping("/admin/adminProfile")
-    public String adminProfile(){
-        return "Hello to ADMIN profile";
-    }
-
     @PostMapping("/registration")
     public String addNewUser(@RequestBody UserInfo userInfo){
         return userInfoService.addUser(userInfo);
