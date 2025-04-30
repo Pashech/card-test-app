@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="v1-0" author="Pavel Setsko">
+        <sql>
+            CREATE SCHEMA IF NOT EXISTS "card-test";
+        </sql>
+    </changeSet>
+    
+    <changeSet id="v1-1" author="Pavel Setsko">
+        <createTable tableName="users" schemaName="card-test">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="first_name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="roles" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="v1-2" author="Pavel Setsko">
+        <createTable tableName="cards" schemaName="card-test">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="card_number" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="card_owner_id" type="bigint"/>
+            <column name="card_validity_period" type="date"/>
+            <column name="status" type="varchar(50)"/>
+            <column name="balance" type="double"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="cards"
+                                 baseColumnNames="card_owner_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_cards_user_info"
+                                 baseTableSchemaName="card-test"
+                                 referencedTableSchemaName="card-test"
+                                 />
+    </changeSet>
+
+</databaseChangeLog>
