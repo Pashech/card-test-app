@@ -2,6 +2,7 @@ package com.example.card_test_app.card.model.service.impl;
 
 import com.example.card_test_app.card.model.Card;
 import com.example.card_test_app.card.model.dto.CardDto;
+import com.example.card_test_app.card.model.dto.CreateCardRequest;
 import com.example.card_test_app.card.model.dto.UserDto;
 import com.example.card_test_app.card.model.repository.CardRepository;
 import com.example.card_test_app.card.model.service.CardService;
@@ -26,17 +27,17 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public CardDto createCard(CardDto cardDto) {
+    public CardDto createCard(CreateCardRequest request) {
 
-        UserInfo cardOwner = userInfoRepository.findById(cardDto.getUserId())
+        UserInfo cardOwner = userInfoRepository.findById(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Card card = new Card();
-        card.setCardNumber(cardDto.getCardNumber());
+        card.setCardNumber(request.getCardNumber());
         card.setCardOwner(cardOwner);
-        card.setCardValidityPeriod(cardDto.getCardValidityPeriod());
-        card.setStatus(cardDto.getStatus());
-        card.setBalance(cardDto.getBalance());
+        card.setCardValidityPeriod(request.getCardValidityPeriod());
+        card.setStatus(request.getStatus());
+        card.setBalance(request.getBalance());
 
         return cardMapper.cardToCardDto(cardRepository.save(card));
     }

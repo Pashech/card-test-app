@@ -2,6 +2,7 @@ package com.example.card_test_app.card.model.controller;
 
 import com.example.card_test_app.card.model.Card;
 import com.example.card_test_app.card.model.dto.CardDto;
+import com.example.card_test_app.card.model.dto.CreateCardRequest;
 import com.example.card_test_app.card.model.service.CardService;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ public class CardController {
     }
 
     @PostMapping("/createCard")
-    public CardDto createCard(@RequestBody CardDto cardDto){
-        return cardService.createCard(cardDto);
+    public CardDto createCard(@RequestBody CreateCardRequest request){
+        return cardService.createCard(request);
     }
 }
