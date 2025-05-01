@@ -2,6 +2,7 @@ package com.example.card_test_app.card.model;
 
 import com.example.card_test_app.card.model.enums.Status;
 import com.example.card_test_app.security.model.UserInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;

@@ -39,4 +39,8 @@ public class UserInfoService implements UserDetailsService {
         userInfoRepository.save(userInfo);
         return "User Added Successfully";
     }
+
+    public Optional<UserInfo> getUserById(Long userId){
+        return userInfoRepository.findById(userId);
+    }
 }

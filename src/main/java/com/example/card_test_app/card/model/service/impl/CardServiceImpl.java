@@ -10,8 +10,13 @@ import com.example.card_test_app.mapper.CardMapper;
 import com.example.card_test_app.mapper.UserMapper;
 import com.example.card_test_app.security.model.UserInfo;
 import com.example.card_test_app.security.repository.UserInfoRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.objenesis.SpringObjenesis;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 @Service
 public class CardServiceImpl implements CardService {
@@ -40,5 +45,11 @@ public class CardServiceImpl implements CardService {
         card.setBalance(request.getBalance());
 
         return cardMapper.cardToCardDto(cardRepository.save(card));
+    }
+
+    @Override
+    public Page<CardDto> findCardsForUser(UserInfo user, String cardNumber, LocalDate cardValidityPeriod, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return cardMapper.mapPageCardToCardDto(cardRepository.findAll(CardSpecifications.withCardOwnerAndFilters(user, cardNumber, cardValidityPeriod), pageable));
     }
 }
