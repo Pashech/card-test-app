@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -43,5 +44,10 @@ public class CardController {
         user.setId(userId);
 
         return cardService.findCardsForUser(user, cardNumber, cardValidityPeriod, page, size);
+    }
+
+    @GetMapping("/allCards")
+    public List<CardDto> findAllCards(){
+        return cardService.getAllCards();
     }
 }

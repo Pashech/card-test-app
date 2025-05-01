@@ -7,6 +7,7 @@ import org.mapstruct.Mapping;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
@@ -18,6 +19,8 @@ public interface CardMapper {
     @Mapping(source = "cardOwner", target = "cardOwner")
     Card cardDtoToCard(CardDto cardDto);
 
+    List<CardDto> cardsToCardDto(List<Card> cards);
+
     default Page<CardDto> mapPageCardToCardDto(Page<Card> pageCard){
         return new PageImpl<>(pageCard.getContent().stream()
                 .map(this::cardToCardDto)
@@ -27,4 +30,5 @@ public interface CardMapper {
 
         );
     }
+
 }

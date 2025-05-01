@@ -17,6 +17,7 @@ import org.springframework.objenesis.SpringObjenesis;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class CardServiceImpl implements CardService {
@@ -51,5 +52,10 @@ public class CardServiceImpl implements CardService {
     public Page<CardDto> findCardsForUser(UserInfo user, String cardNumber, LocalDate cardValidityPeriod, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return cardMapper.mapPageCardToCardDto(cardRepository.findAll(CardSpecifications.withCardOwnerAndFilters(user, cardNumber, cardValidityPeriod), pageable));
+    }
+
+    @Override
+    public List<CardDto> getAllCards() {
+        return cardMapper.cardsToCardDto(cardRepository.findAll());
     }
 }

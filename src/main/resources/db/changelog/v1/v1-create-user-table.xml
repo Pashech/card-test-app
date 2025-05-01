@@ -56,4 +56,11 @@
                                  />
     </changeSet>
 
+    <changeSet id="v1-3" author="Pavel Setsko">
+        <modifyDataType tableName="cards"
+                        columnName="card_number"
+                        newDataType="varchar(255)"
+                        schemaName="card-test"/>
+    </changeSet>
+
 </databaseChangeLog>
