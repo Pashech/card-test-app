@@ -16,4 +16,5 @@ public interface CardService {
     //String deleteCard(Long cardId);
     List<CardDto> getAllCards();
     Card findCardById(Long cardId);
+    double getBalance(Long cardId);
 }

@@ -1,6 +1,7 @@
 package com.example.card_test_app.card.model.service.impl;
 
 import com.example.card_test_app.card.model.Card;
+import com.example.card_test_app.card.model.dto.BlockRequestDto;
 import com.example.card_test_app.card.model.enums.RequestBlockingStatus;
 import com.example.card_test_app.card.model.enums.Status;
 import com.example.card_test_app.card.model.repository.BlockRequestRepository;
@@ -8,6 +9,7 @@ import com.example.card_test_app.card.model.service.BlockRequestService;
 import com.example.card_test_app.card.model.service.CardService;
 import com.example.card_test_app.security.model.BlockRequest;
 import com.fasterxml.jackson.core.PrettyPrinter;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,6 +29,8 @@ public class BlockRequestServiceImpl implements BlockRequestService {
     @Override
     public BlockRequest createBlockRequest(BlockRequest request) {
 
+        Card card = cardService.findCardById(request.getCardId());
+
         BlockRequest blockRequest = new BlockRequest();
         blockRequest.setCardId(request.getCardId());
         blockRequest.setUserId(request.getUserId());
@@ -42,16 +46,14 @@ public class BlockRequestServiceImpl implements BlockRequestService {
     }
 
     @Override
-    public void approveBlockRequest(Long requestId) {
+    public void approveBlockRequest(BlockRequestDto blockRequestDto) {
 
-        BlockRequest request = blockRequestRepository.findById(requestId).orElseThrow();
-        Card card = cardService.findCardById(1L);
+        BlockRequest request = blockRequestRepository.findById(blockRequestDto.getRequestId()).orElseThrow();
+        Card card = cardService.findCardById(blockRequestDto.getCardId());
         card.setStatus(Status.BLOCKED);
         request.setRequestBlockingStatus(RequestBlockingStatus.APPROVED);
         blockRequestRepository.save(request);
     }
-
-    // TODO add BlockRequestDto
 
     @Override
     public void rejectBlockRequest(Long requestId) {

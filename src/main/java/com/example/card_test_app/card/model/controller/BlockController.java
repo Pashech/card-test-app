@@ -1,5 +1,6 @@
 package com.example.card_test_app.card.model.controller;
 
+import com.example.card_test_app.card.model.dto.BlockRequestDto;
 import com.example.card_test_app.card.model.service.BlockRequestService;
 import com.example.card_test_app.security.model.BlockRequest;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +28,8 @@ public class BlockController {
     }
 
     @PutMapping("/{requestId}/approve")
-    public void approveBlockRequest(@PathVariable Long requestId){
-        blockRequestService.approveBlockRequest(requestId);
+    public void approveBlockRequest(@RequestBody BlockRequestDto blockRequestDto){
+        blockRequestService.approveBlockRequest(blockRequestDto);
     }
 
     @PutMapping("/{requestId}/reject")

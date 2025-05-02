@@ -38,7 +38,7 @@ public class SecurityConfig {
                                 "/card/createCard", "/card/userCards", "/card/allCards",
                                 "/block-requests/create-block-request", "/block-requests/pending",
                                 "/block-requests/{requestId}/approve", "/block-requests/{requestId}/reject").permitAll()
-                        .requestMatchers("/auth/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers("/auth/user/**", "/card/balance/{cardId}").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/auth/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )

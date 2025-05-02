@@ -50,4 +50,9 @@ public class CardController {
     public List<CardDto> findAllCards(){
         return cardService.getAllCards();
     }
+
+    @GetMapping("/balance/{cardId}")
+    public double getCardBalance(@PathVariable Long cardId){
+        return cardService.getBalance(cardId);
+    }
 }
