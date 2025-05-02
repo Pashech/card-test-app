@@ -4,6 +4,8 @@ import com.example.card_test_app.card.model.Card;
 import com.example.card_test_app.card.model.dto.BlockRequestDto;
 import com.example.card_test_app.card.model.enums.RequestBlockingStatus;
 import com.example.card_test_app.card.model.enums.Status;
+import com.example.card_test_app.card.model.exceptions.CardNotFoundException;
+import com.example.card_test_app.card.model.exceptions.RequestBlockNotFoundException;
 import com.example.card_test_app.card.model.repository.BlockRequestRepository;
 import com.example.card_test_app.card.model.service.BlockRequestService;
 import com.example.card_test_app.card.model.service.CardService;
@@ -28,9 +30,6 @@ public class BlockRequestServiceImpl implements BlockRequestService {
 
     @Override
     public BlockRequest createBlockRequest(BlockRequest request) {
-
-        Card card = cardService.findCardById(request.getCardId());
-
         BlockRequest blockRequest = new BlockRequest();
         blockRequest.setCardId(request.getCardId());
         blockRequest.setUserId(request.getUserId());
@@ -42,23 +41,24 @@ public class BlockRequestServiceImpl implements BlockRequestService {
 
     @Override
     public List<BlockRequest> getPendingRequest() {
-        return blockRequestRepository.findByRequestBlockingStatus(RequestBlockingStatus.PENDING);
+        List<BlockRequest> byRequestBlockingStatus = blockRequestRepository.findByRequestBlockingStatus(RequestBlockingStatus.PENDING);
+        if(byRequestBlockingStatus.isEmpty()){
+            throw new RequestBlockNotFoundException("Blocking request not found");
+        }
+        return byRequestBlockingStatus;
     }
 
     @Override
     public void approveBlockRequest(BlockRequestDto blockRequestDto) {
 
-        BlockRequest request = blockRequestRepository.findById(blockRequestDto.getRequestId()).orElseThrow();
+        BlockRequest request = blockRequestRepository.findById(blockRequestDto.getRequestId())
+                .orElseThrow(() -> new RequestBlockNotFoundException("Blocking request not found"));
         Card card = cardService.findCardById(blockRequestDto.getCardId());
+        if(card == null){
+            throw new CardNotFoundException("Card not found with id " + request.getCardId());
+        }
         card.setStatus(Status.BLOCKED);
         request.setRequestBlockingStatus(RequestBlockingStatus.APPROVED);
-        blockRequestRepository.save(request);
-    }
-
-    @Override
-    public void rejectBlockRequest(Long requestId) {
-        BlockRequest request = blockRequestRepository.findById(requestId).orElseThrow();
-        request.setRequestBlockingStatus(RequestBlockingStatus.REJECTED);
         blockRequestRepository.save(request);
     }
 }

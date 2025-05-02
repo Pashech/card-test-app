@@ -1,0 +1,41 @@
+package com.example.card_test_app.security.model;
+
+public class TransferRequest {
+
+    private Long fromCardId;
+    private Long toCardId;
+    private double amount;
+
+    public TransferRequest() {
+    }
+
+    public TransferRequest(Long fromCardId, Long toCardId, double amount) {
+        this.fromCardId = fromCardId;
+        this.toCardId = toCardId;
+        this.amount = amount;
+    }
+
+    public Long getFromCardId() {
+        return fromCardId;
+    }
+
+    public void setFromCardId(Long fromCardId) {
+        this.fromCardId = fromCardId;
+    }
+
+    public Long getToCardId() {
+        return toCardId;
+    }
+
+    public void setToCardId(Long toCardId) {
+        this.toCardId = toCardId;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+}

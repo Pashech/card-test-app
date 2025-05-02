@@ -10,5 +10,4 @@ public interface BlockRequestService {
     BlockRequest createBlockRequest(BlockRequest request);
     List<BlockRequest> getPendingRequest();
     void approveBlockRequest(BlockRequestDto request);
-    void rejectBlockRequest(Long requestId);
 }

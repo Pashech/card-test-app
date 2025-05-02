@@ -34,12 +34,15 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/welcome", "/auth/registration", "/auth/login",
-                                "/card/createCard", "/card/userCards", "/card/allCards",
-                                "/block-requests/create-block-request", "/block-requests/pending",
-                                "/block-requests/{requestId}/approve", "/block-requests/{requestId}/reject").permitAll()
-                        .requestMatchers("/auth/user/**", "/card/balance/{cardId}").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers("/auth/admin/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/auth/registration", "/auth/login").permitAll()
+
+                        .requestMatchers("/card/transfer").hasAuthority("ROLE_USER")
+
+                        .requestMatchers("/card/userCards", "/card/balance/{cardId}", "/block-requests/create-block-request").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+
+                        .requestMatchers("/card/createCard", "/card/allCards", "/card/activate/{cardId}",
+                                "/card/delete/{cardId}",  "/block-requests/pending",
+                                "/auth/deleteUser/{userId}", "/block-requests/approve").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

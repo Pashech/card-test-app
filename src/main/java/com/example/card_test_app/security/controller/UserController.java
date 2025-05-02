@@ -45,4 +45,9 @@ public class UserController {
             throw new UsernameNotFoundException("Invalid user request!");
         }
     }
+
+    @DeleteMapping("/deleteUser/{userId}")
+    public void deleteUser(@PathVariable Long userId){
+        userInfoService.deleteUser(userId);
+    }
 }

@@ -17,25 +17,18 @@ public class BlockController {
         this.blockRequestService = blockRequestService;
     }
 
-    @PostMapping("/create-block-request")
-    public BlockRequest createBlockRequest(@RequestBody BlockRequest request){
-        return blockRequestService.createBlockRequest(request);
-    }
-
     @GetMapping("/pending")
     public List<BlockRequest> getPendingRequests(){
         return blockRequestService.getPendingRequest();
     }
 
-    @PutMapping("/{requestId}/approve")
+    @PostMapping("/create-block-request")
+    public BlockRequest createBlockRequest(@RequestBody BlockRequest request){
+        return blockRequestService.createBlockRequest(request);
+    }
+
+    @PutMapping("/approve")
     public void approveBlockRequest(@RequestBody BlockRequestDto blockRequestDto){
         blockRequestService.approveBlockRequest(blockRequestDto);
     }
-
-    @PutMapping("/{requestId}/reject")
-    public void rejectBlockRequest(@PathVariable Long requestId){
-        blockRequestService.rejectBlockRequest(requestId);
-    }
-
-
 }

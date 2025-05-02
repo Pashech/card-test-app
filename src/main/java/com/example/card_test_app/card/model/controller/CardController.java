@@ -4,9 +4,11 @@ import com.example.card_test_app.card.model.Card;
 import com.example.card_test_app.card.model.dto.CardDto;
 import com.example.card_test_app.card.model.dto.CreateCardRequest;
 import com.example.card_test_app.card.model.service.CardService;
+import com.example.card_test_app.security.model.TransferRequest;
 import com.example.card_test_app.security.model.UserInfo;
 import com.example.card_test_app.security.repository.UserInfoRepository;
 import com.example.card_test_app.security.service.UserInfoService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +30,7 @@ public class CardController {
     }
 
     @PostMapping("/createCard")
-    public CardDto createCard(@RequestBody CreateCardRequest request){
+    public CardDto createCard(@Valid @RequestBody CreateCardRequest request){
         return cardService.createCard(request);
     }
 
@@ -40,7 +42,7 @@ public class CardController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
             ){
-        UserInfo user = userInfoService.getUserById(userId).get();
+        UserInfo user = userInfoService.getUserById(userId);
         user.setId(userId);
 
         return cardService.findCardsForUser(user, cardNumber, cardValidityPeriod, page, size);
@@ -54,5 +56,20 @@ public class CardController {
     @GetMapping("/balance/{cardId}")
     public double getCardBalance(@PathVariable Long cardId){
         return cardService.getBalance(cardId);
+    }
+
+    @PostMapping("/transfer")
+    public String transfer(@RequestBody TransferRequest transferRequest){
+        return cardService.transfer(transferRequest);
+    }
+
+    @PutMapping("/activate/{cardId}")
+    public void activateCard(@PathVariable Long cardId){
+        cardService.activateCard(cardId);
+    }
+
+    @DeleteMapping("/delete/{cardId}")
+    public void deleteCard(@PathVariable Long cardId){
+        cardService.deleteCard(cardId);
     }
 }

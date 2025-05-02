@@ -15,7 +15,6 @@ import java.util.Optional;
 @Service
 public class UserInfoService implements UserDetailsService {
 
-
     private final UserInfoRepository userInfoRepository;
 
     private final PasswordEncoder passwordEncoder;
@@ -40,7 +39,12 @@ public class UserInfoService implements UserDetailsService {
         return "User Added Successfully";
     }
 
-    public Optional<UserInfo> getUserById(Long userId){
-        return userInfoRepository.findById(userId);
+    public UserInfo getUserById(Long userId){
+        return userInfoRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
+    }
+
+    public void deleteUser(Long userId){
+        userInfoRepository.deleteById(userId);
     }
 }
