@@ -15,4 +15,5 @@ public interface CardService {
     Page<CardDto> findCardsForUser(UserInfo userInfo, String cardNumber, LocalDate validityPeriod, int page, int size);
     //String deleteCard(Long cardId);
     List<CardDto> getAllCards();
+    Card findCardById(Long cardId);
 }

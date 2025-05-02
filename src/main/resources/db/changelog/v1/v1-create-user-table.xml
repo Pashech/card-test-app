@@ -62,5 +62,25 @@
                         newDataType="varchar(255)"
                         schemaName="card-test"/>
     </changeSet>
+    
+    <changeSet id="v1-4" author="Pavel Setsko">
+        <createTable tableName="block-request" schemaName="card-test">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="card_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="request_time" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="request_blocking_status" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
 
 </databaseChangeLog>

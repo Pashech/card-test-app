@@ -1,0 +1,62 @@
+package com.example.card_test_app.card.model.service.impl;
+
+import com.example.card_test_app.card.model.Card;
+import com.example.card_test_app.card.model.enums.RequestBlockingStatus;
+import com.example.card_test_app.card.model.enums.Status;
+import com.example.card_test_app.card.model.repository.BlockRequestRepository;
+import com.example.card_test_app.card.model.service.BlockRequestService;
+import com.example.card_test_app.card.model.service.CardService;
+import com.example.card_test_app.security.model.BlockRequest;
+import com.fasterxml.jackson.core.PrettyPrinter;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+public class BlockRequestServiceImpl implements BlockRequestService {
+
+    private final BlockRequestRepository blockRequestRepository;
+    private final CardService cardService;
+
+    public BlockRequestServiceImpl(BlockRequestRepository blockRequestRepository, CardService cardService) {
+        this.blockRequestRepository = blockRequestRepository;
+        this.cardService = cardService;
+    }
+
+    @Override
+    public BlockRequest createBlockRequest(BlockRequest request) {
+
+        BlockRequest blockRequest = new BlockRequest();
+        blockRequest.setCardId(request.getCardId());
+        blockRequest.setUserId(request.getUserId());
+        blockRequest.setRequestTime(LocalDateTime.now());
+        blockRequest.setRequestBlockingStatus(RequestBlockingStatus.PENDING);
+
+        return blockRequestRepository.save(blockRequest);
+    }
+
+    @Override
+    public List<BlockRequest> getPendingRequest() {
+        return blockRequestRepository.findByRequestBlockingStatus(RequestBlockingStatus.PENDING);
+    }
+
+    @Override
+    public void approveBlockRequest(Long requestId) {
+
+        BlockRequest request = blockRequestRepository.findById(requestId).orElseThrow();
+        Card card = cardService.findCardById(1L);
+        card.setStatus(Status.BLOCKED);
+        request.setRequestBlockingStatus(RequestBlockingStatus.APPROVED);
+        blockRequestRepository.save(request);
+    }
+
+    // TODO add BlockRequestDto
+
+    @Override
+    public void rejectBlockRequest(Long requestId) {
+        BlockRequest request = blockRequestRepository.findById(requestId).orElseThrow();
+        request.setRequestBlockingStatus(RequestBlockingStatus.REJECTED);
+        blockRequestRepository.save(request);
+    }
+}

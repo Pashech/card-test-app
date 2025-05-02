@@ -35,7 +35,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/welcome", "/auth/registration", "/auth/login",
-                                "/card/createCard", "/card/userCards", "/card/allCards").permitAll()
+                                "/card/createCard", "/card/userCards", "/card/allCards",
+                                "/block-requests/create-block-request", "/block-requests/pending",
+                                "/block-requests/{requestId}/approve", "/block-requests/{requestId}/reject").permitAll()
                         .requestMatchers("/auth/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                         .requestMatchers("/auth/admin/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
