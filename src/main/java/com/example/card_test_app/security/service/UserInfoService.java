@@ -1,7 +1,7 @@
 package com.example.card_test_app.security.service;
 
 import com.example.card_test_app.card.model.dto.RegistrationUserDto;
-import com.example.card_test_app.mapper.UserMapper;
+import com.example.card_test_app.card.model.exceptions.UserAlreadyExistException;
 import com.example.card_test_app.security.model.UserInfo;
 import com.example.card_test_app.security.repository.UserInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +20,11 @@ public class UserInfoService implements UserDetailsService {
     private final UserInfoRepository userInfoRepository;
 
     private final PasswordEncoder passwordEncoder;
-    private final UserMapper userMapper;
 
     @Autowired
-    public UserInfoService(UserInfoRepository userInfoRepository, @Lazy PasswordEncoder passwordEncoder, UserMapper userMapper) {
+    public UserInfoService(UserInfoRepository userInfoRepository, @Lazy PasswordEncoder passwordEncoder) {
         this.userInfoRepository = userInfoRepository;
         this.passwordEncoder = passwordEncoder;
-        this.userMapper = userMapper;
     }
 
     @Override
@@ -39,11 +37,18 @@ public class UserInfoService implements UserDetailsService {
 
     public String addUser(RegistrationUserDto userInfo){
 
+        Optional<UserInfo> userFromDb = userInfoRepository.findByEmail(userInfo.getEmail());
+
+        if (userFromDb.isPresent()) {
+            throw new UserAlreadyExistException("User already exists with the same email");
+        }
+
         UserInfo user = new UserInfo();
         user.setFirstName(userInfo.getFirstName());
         user.setLastName(userInfo.getLastName());
         user.setPassword(passwordEncoder.encode(userInfo.getPassword()));
         user.setEmail(userInfo.getEmail());
+
         user.setRoles(userInfo.getRoles());
         userInfoRepository.save(user);
 
