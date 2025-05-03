@@ -30,7 +30,7 @@ public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final UserInfoRepository userInfoRepository;
     private final CardMapper cardMapper;
-    private final UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;;
 
     public CardServiceImpl(CardRepository cardRepository, UserInfoRepository userInfoRepository, CardMapper cardMapper, UserDetailsService userDetailsService) {
         this.cardRepository = cardRepository;

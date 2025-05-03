@@ -59,7 +59,7 @@ public class CardController {
     }
 
     @PostMapping("/transfer")
-    public String transfer(@RequestBody TransferRequest transferRequest){
+    public String transfer(@Valid @RequestBody TransferRequest transferRequest){
         return cardService.transfer(transferRequest);
     }
 

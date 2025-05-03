@@ -1,9 +1,17 @@
 package com.example.card_test_app.security.model;
 
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
+
 public class TransferRequest {
 
+    @NotNull(message = "fromCard id is mandatory")
     private Long fromCardId;
+
+    @NotNull(message = "toCardId is mandatory")
     private Long toCardId;
+
+    @DecimalMin(value = "0.0", inclusive = true, message = "Amount must be non-negative")
     private double amount;
 
     public TransferRequest() {
