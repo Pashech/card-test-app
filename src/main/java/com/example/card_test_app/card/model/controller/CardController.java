@@ -10,6 +10,8 @@ import com.example.card_test_app.security.repository.UserInfoRepository;
 import com.example.card_test_app.security.service.UserInfoService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -30,12 +32,12 @@ public class CardController {
     }
 
     @PostMapping("/createCard")
-    public CardDto createCard(@Valid @RequestBody CreateCardRequest request){
-        return cardService.createCard(request);
+    public ResponseEntity<CardDto> createCard(@Valid @RequestBody CreateCardRequest request){
+        return ResponseEntity.status(HttpStatus.CREATED).body(cardService.createCard(request));
     }
 
     @GetMapping("/userCards")
-    public Page<CardDto> getCards(
+    public ResponseEntity<Page<CardDto>> getCards(
             @RequestParam Long userId,
             @RequestParam(required = false) String cardNumber,
             @RequestParam(required = false)LocalDate cardValidityPeriod,
@@ -45,31 +47,33 @@ public class CardController {
         UserInfo user = userInfoService.getUserById(userId);
         user.setId(userId);
 
-        return cardService.findCardsForUser(user, cardNumber, cardValidityPeriod, page, size);
+        return ResponseEntity.ok(cardService.findCardsForUser(user, cardNumber, cardValidityPeriod, page, size));
     }
 
     @GetMapping("/allCards")
-    public List<CardDto> findAllCards(){
-        return cardService.getAllCards();
+    public ResponseEntity<List<CardDto>> findAllCards(){
+        return ResponseEntity.ok(cardService.getAllCards());
     }
 
     @GetMapping("/balance/{cardId}")
-    public double getCardBalance(@PathVariable Long cardId){
-        return cardService.getBalance(cardId);
+    public ResponseEntity<Double> getCardBalance(@PathVariable Long cardId){
+        return ResponseEntity.ok(cardService.getBalance(cardId));
     }
 
     @PostMapping("/transfer")
-    public String transfer(@Valid @RequestBody TransferRequest transferRequest){
-        return cardService.transfer(transferRequest);
+    public ResponseEntity<String> transfer(@Valid @RequestBody TransferRequest transferRequest){
+        return ResponseEntity.ok(cardService.transfer(transferRequest));
     }
 
     @PutMapping("/activate/{cardId}")
-    public void activateCard(@PathVariable Long cardId){
+    public ResponseEntity<Void> activateCard(@PathVariable Long cardId){
         cardService.activateCard(cardId);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/delete/{cardId}")
-    public void deleteCard(@PathVariable Long cardId){
+    public ResponseEntity<Void> deleteCard(@PathVariable Long cardId){
         cardService.deleteCard(cardId);
+        return ResponseEntity.noContent().build();
     }
 }

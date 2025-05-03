@@ -5,6 +5,8 @@ import com.example.card_test_app.card.model.dto.BlockRequestDto;
 import com.example.card_test_app.card.model.service.BlockRequestService;
 import com.example.card_test_app.security.model.BlockRequest;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,17 +22,18 @@ public class BlockController {
     }
 
     @GetMapping("/pending")
-    public List<BlockRequest> getPendingRequests(){
-        return blockRequestService.getPendingRequest();
+    public ResponseEntity<List<BlockRequest>> getPendingRequests(){
+        return ResponseEntity.ok(blockRequestService.getPendingRequest());
     }
 
     @PostMapping("/create-block-request")
-    public BlockRequest createBlockRequest(@Valid @RequestBody BlockRequestDto request){
-        return blockRequestService.createBlockRequest(request);
+    public ResponseEntity<BlockRequest> createBlockRequest(@Valid @RequestBody BlockRequestDto request){
+        return ResponseEntity.status(HttpStatus.CREATED).body(blockRequestService.createBlockRequest(request));
     }
 
     @PutMapping("/approve")
-    public void approveBlockRequest(@Valid @RequestBody ApproveRequestDto approveRequestDto){
+    public ResponseEntity<Void> approveBlockRequest(@Valid @RequestBody ApproveRequestDto approveRequestDto){
         blockRequestService.approveBlockRequest(approveRequestDto);
+        return ResponseEntity.noContent().build();
     }
 }

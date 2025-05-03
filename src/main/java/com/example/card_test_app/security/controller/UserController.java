@@ -1,10 +1,14 @@
 package com.example.card_test_app.security.controller;
 
+import com.example.card_test_app.card.model.dto.RegistrationUserDto;
 import com.example.card_test_app.security.model.AuthRequest;
 import com.example.card_test_app.security.model.UserInfo;
 import com.example.card_test_app.security.service.JwtService;
 import com.example.card_test_app.security.service.UserInfoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,24 +34,25 @@ public class UserController {
     }
 
     @PostMapping("/registration")
-    public String addNewUser(@RequestBody UserInfo userInfo){
-        return userInfoService.addUser(userInfo);
+    public ResponseEntity<String> addNewUser(@Valid @RequestBody RegistrationUserDto userInfo){
+        return ResponseEntity.status(HttpStatus.CREATED).body(userInfoService.addUser(userInfo));
     }
 
     @PostMapping("/login")
-    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest){
+    public ResponseEntity<String> authenticateAndGetToken(@Valid @RequestBody AuthRequest authRequest){
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
         );
         if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(authRequest.getEmail());
+            return ResponseEntity.ok(jwtService.generateToken(authRequest.getEmail()));
         } else {
-            throw new UsernameNotFoundException("Invalid user request!");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user request!");
         }
     }
 
     @DeleteMapping("/deleteUser/{userId}")
-    public void deleteUser(@PathVariable Long userId){
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId){
         userInfoService.deleteUser(userId);
+        return ResponseEntity.noContent().build();
     }
 }
