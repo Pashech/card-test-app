@@ -63,7 +63,7 @@ public class CardMapperImpl implements CardMapper {
         );
     }
 
-    private String maskedString(String input){
+    public String maskedString(String input){
         String[] parts = input.split(" ");
         StringBuilder masked = new StringBuilder();
 

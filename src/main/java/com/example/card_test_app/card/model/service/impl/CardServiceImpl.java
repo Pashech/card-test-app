@@ -20,9 +20,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import java.beans.Transient;
+
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CardServiceImpl implements CardService {
@@ -72,7 +73,12 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public void deleteCard(Long cardId) {
-        cardRepository.deleteById(cardId);
+        Optional<Card> card = cardRepository.findById(cardId);
+        if(card.isPresent()){
+            cardRepository.deleteById(cardId);
+        }else {
+            throw new CardNotFoundException("Card not found with id " + cardId);
+        }
     }
 
     @Override
@@ -83,7 +89,7 @@ public class CardServiceImpl implements CardService {
     @Override
     public Card findCardById(Long cardId) {
         return cardRepository.findById(cardId).orElseThrow(
-                () -> new CardNotFoundException("Card not found with ID: " + cardId)
+                () -> new CardNotFoundException("Card not found with id: " + cardId)
         );
     }
 
@@ -91,7 +97,7 @@ public class CardServiceImpl implements CardService {
     public double getBalance(Long cardId) {
         UserInfoDetails currentUser = (UserInfoDetails) userDetailsService.loadUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         Card card = cardRepository.findById(cardId).orElseThrow(
-                () -> new CardNotFoundException("Card not found with ID: " + cardId));
+                () -> new CardNotFoundException("Card not found with id: " + cardId));
         String email = card.getCardOwner().getEmail();
         String userEmail = currentUser.getUsername();
         if (!email.equals(userEmail)) {
@@ -102,7 +108,9 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public void activateCard(Long cardId) {
-        Card card = cardRepository.findById(cardId).orElseThrow();
+        Card card = cardRepository.findById(cardId).orElseThrow(
+                () -> new CardNotFoundException("Card not found with id: " + cardId)
+        );
         if (card.getStatus().equals(Status.BLOCKED)) {
             card.setStatus(Status.ACTIVE);
         }
@@ -114,10 +122,10 @@ public class CardServiceImpl implements CardService {
     public String transfer(TransferRequest transferRequest) {
 
         Card fromCard = cardRepository.findById(transferRequest.getFromCardId()).orElseThrow(
-                () -> new CardNotFoundException("Card not found with ID: " + transferRequest.getFromCardId()));
+                () -> new CardNotFoundException("Card not found with id: " + transferRequest.getFromCardId()));
 
         Card toCard = cardRepository.findById(transferRequest.getToCardId()).orElseThrow(
-                () -> new CardNotFoundException("Card not found with ID: " + transferRequest.getToCardId()));
+                () -> new CardNotFoundException("Card not found with id: " + transferRequest.getToCardId()));
 
         if(fromCard.getStatus() == Status.BLOCKED || toCard.getStatus() == Status.BLOCKED){
             throw new CardBlockedException("Card is blocked");
