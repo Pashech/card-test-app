@@ -2,6 +2,7 @@ package com.example.card_test_app.security.service;
 
 import com.example.card_test_app.card.model.dto.RegistrationUserDto;
 import com.example.card_test_app.card.model.exceptions.UserAlreadyExistException;
+import com.example.card_test_app.card.model.exceptions.UserNotFoundException;
 import com.example.card_test_app.security.model.UserInfo;
 import com.example.card_test_app.security.repository.UserInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,8 +49,8 @@ public class UserInfoService implements UserDetailsService {
         user.setLastName(userInfo.getLastName());
         user.setPassword(passwordEncoder.encode(userInfo.getPassword()));
         user.setEmail(userInfo.getEmail());
-
         user.setRoles(userInfo.getRoles());
+
         userInfoRepository.save(user);
 
         return "User Added Successfully";
@@ -57,7 +58,7 @@ public class UserInfoService implements UserDetailsService {
 
     public UserInfo getUserById(Long userId){
         return userInfoRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
     }
 
     public void deleteUser(Long userId){

@@ -16,10 +16,8 @@ import com.example.card_test_app.security.model.BlockRequest;
 import com.example.card_test_app.security.model.UserInfo;
 import com.example.card_test_app.security.service.UserInfoDetails;
 import com.example.card_test_app.security.service.UserInfoService;
-import com.fasterxml.jackson.core.PrettyPrinter;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -44,17 +42,9 @@ public class BlockRequestServiceImpl implements BlockRequestService {
     public BlockRequest createBlockRequest(BlockRequestDto request) {
         BlockRequest blockRequest = new BlockRequest();
         blockRequest.setCardId(request.getCardId());
-        Card card = cardService.findCardById(request.getCardId());
-        if(card == null){
-            throw new CardNotFoundException("Card not found with id " + request.getCardId());
-        }
         blockRequest.setUserId(request.getUserId());
         UserInfoDetails currentUser = (UserInfoDetails) userDetailsService.loadUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         UserInfo user = userInfoService.getUserById(request.getUserId());
-
-        if (user == null) {
-            throw new UserNotFoundException("User not found with id " + request.getUserId());
-        }
 
         if(!currentUser.getUsername().equals(user.getEmail())){
             throw new AuthenticateUserException("User not authenticate");
@@ -81,9 +71,6 @@ public class BlockRequestServiceImpl implements BlockRequestService {
         BlockRequest request = blockRequestRepository.findById(approveRequestDto.getRequestId())
                 .orElseThrow(() -> new RequestBlockNotFoundException("Blocking request not found"));
         Card card = cardService.findCardById(approveRequestDto.getCardId());
-        if (card == null) {
-            throw new CardNotFoundException("Card not found with id " + request.getCardId());
-        }
         card.setStatus(Status.BLOCKED);
         request.setRequestBlockingStatus(RequestBlockingStatus.APPROVED);
         blockRequestRepository.save(request);

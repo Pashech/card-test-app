@@ -4,27 +4,20 @@ import com.example.card_test_app.card.model.Card;
 import com.example.card_test_app.card.model.dto.CardDto;
 import com.example.card_test_app.card.model.dto.CreateCardRequest;
 import com.example.card_test_app.card.model.enums.Status;
-import com.example.card_test_app.card.model.exceptions.AuthenticateUserException;
-import com.example.card_test_app.card.model.exceptions.CardBlockedException;
-import com.example.card_test_app.card.model.exceptions.CardNotFoundException;
-import com.example.card_test_app.card.model.exceptions.UserNotFoundException;
+import com.example.card_test_app.card.model.exceptions.*;
 import com.example.card_test_app.card.model.repository.CardRepository;
 import com.example.card_test_app.mapper.CardMapper;
-import com.example.card_test_app.mapper.CardMapperImpl;
 import com.example.card_test_app.security.model.TransferRequest;
 import com.example.card_test_app.security.model.UserInfo;
 import com.example.card_test_app.security.repository.UserInfoRepository;
-import jakarta.persistence.Query;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -34,8 +27,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -51,12 +42,9 @@ public class CardServiceImpTestcontainers {
     private CardMapper cardMapper;
 
     @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
     private CardServiceImpl cardService;
 
-    private static PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest")
+    private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest")
             .withDatabaseName("testdb")
             .withUsername("user")
             .withPassword("password");
@@ -138,7 +126,7 @@ public class CardServiceImpTestcontainers {
 
         assertNotNull(createdCardDto);
 
-        assertTrue(cardRepository.findAll().size() > 0);
+        assertFalse(cardRepository.findAll().isEmpty());
     }
 
     @Test
@@ -184,7 +172,7 @@ public class CardServiceImpTestcontainers {
     @Test
     @DisplayName("get all cards")
     void getAllCardsTest() {
-        List<CardDto> cards = cardMapper.cardsToCardDto(cardRepository.findAll());
+        List<Card> cards = cardRepository.findAll();
         assertEquals(3, cards.size());
     }
 
@@ -379,7 +367,58 @@ public class CardServiceImpTestcontainers {
         assertEquals("Card is blocked", exception.getMessage());
     }
 
-    //TODO написать тест на минусовой баланс
+    @Test
+    @DisplayName("Transfer money with card balance negative")
+    void transferWithCardBalanceNegative() {
+        List<Card> cards = cardRepository.findAll();
+        List<Card> cardList = findActiveCard(cards);
+
+        Long cardFrom = cardList.get(0).getId();
+        Long cardToId = cardList.get(1).getId();
+
+        TransferRequest request = new TransferRequest();
+        request.setFromCardId(cardFrom);
+        request.setToCardId(cardToId);
+        request.setAmount(5000000.0);
+
+        Exception exception = assertThrows(BalanceException.class, () -> {
+            cardService.transfer(request);
+        });
+
+        assertEquals("Insufficient funds on the source card", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("find cards for user success")
+    void findCardsForUserTest(){
+
+        UserInfo userInfo = userInfoRepository.findByEmail("Pashech555@gmail.com").get();
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(userInfo.getEmail(), userInfo.getPassword());
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        Page<CardDto> result = cardService.findCardsForUser(userInfo, null, null, 0, 5);
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    @DisplayName("find cards for user with not authenticate")
+    void findCardsForUserTestWithNotAuthentication(){
+
+        UserInfo userInfo = userInfoRepository.findByEmail("Otkly4ka@mail.com").get();
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(userInfo.getEmail(), userInfo.getPassword());
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        userInfo.setEmail("Pashech555@gmail.com");
+
+        Exception exception = assertThrows(AuthenticateUserException.class, () -> {
+            cardService.findCardsForUser(userInfo, null, null, 0, 5);
+        });
+
+        assertEquals("User not authenticate", exception.getMessage());
+    }
 
     private Card findBlockedCard(List<Card> cards){
         Card card = new Card();
