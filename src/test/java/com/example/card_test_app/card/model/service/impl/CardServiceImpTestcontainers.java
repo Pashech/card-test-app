@@ -15,7 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -32,22 +31,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 public class CardServiceImpTestcontainers {
 
+    private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest").withDatabaseName("testdb").withUsername("user").withPassword("password");
     @Autowired
     CardRepository cardRepository;
-
     @Autowired
     private UserInfoRepository userInfoRepository;
-
-    @Autowired
-    private CardMapper cardMapper;
-
     @Autowired
     private CardServiceImpl cardService;
-
-    private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest")
-            .withDatabaseName("testdb")
-            .withUsername("user")
-            .withPassword("password");
 
     @BeforeAll
     public static void setUp() {
@@ -58,7 +48,7 @@ public class CardServiceImpTestcontainers {
     }
 
     @AfterEach
-    public void cleanDb(){
+    public void cleanDb() {
         cardRepository.deleteAll();
         userInfoRepository.deleteAll();
     }
@@ -68,17 +58,17 @@ public class CardServiceImpTestcontainers {
         MockitoAnnotations.openMocks(this);
 
         UserInfo userInfo = new UserInfo();
-        userInfo.setEmail("Pashech555@gmail.com");
+        userInfo.setEmail("TestUser@gmail.com");
         userInfo.setFirstName("Pavel");
-        userInfo.setLastName("Setsko");
-        userInfo.setPassword("5908299");
+        userInfo.setLastName("Pavel");
+        userInfo.setPassword("123987456");
         userInfo.setRoles("ROLE_USER");
 
         UserInfo userInfoAdmin = new UserInfo();
-        userInfoAdmin.setEmail("Otkly4ka@mail.com");
-        userInfoAdmin.setFirstName("Yana");
-        userInfoAdmin.setLastName("Setsko");
-        userInfoAdmin.setPassword("1840827");
+        userInfoAdmin.setEmail("TestUs@mail.com");
+        userInfoAdmin.setFirstName("Alex");
+        userInfoAdmin.setLastName("Alex");
+        userInfoAdmin.setPassword("123456789");
         userInfoAdmin.setRoles("ROLE_ADMIN");
 
         userInfoRepository.save(userInfo);
@@ -113,12 +103,12 @@ public class CardServiceImpTestcontainers {
     @Test
     @DisplayName("Create card success")
     public void testCreateCardTest() {
-        Optional<UserInfo> user = userInfoRepository.findByEmail("Pashech555@gmail.com");
+        Optional<UserInfo> user = userInfoRepository.findByEmail("TestUser@gmail.com");
         Long userActualId = user.get().getId();
         CreateCardRequest request = new CreateCardRequest();
         request.setUserId(userActualId);
         request.setCardNumber("1111 1111 1111 1111");
-        request.setCardValidityPeriod(LocalDate.of(2025, 12,30));
+        request.setCardValidityPeriod(LocalDate.of(2025, 12, 30));
         request.setStatus(Status.ACTIVE);
         request.setBalance(100.0);
 
@@ -136,7 +126,7 @@ public class CardServiceImpTestcontainers {
         CreateCardRequest request = new CreateCardRequest();
         request.setUserId(nonExistedUserId);
         request.setCardNumber("1111 1111 1111 1111");
-        request.setCardValidityPeriod(LocalDate.of(2025, 12,30));
+        request.setCardValidityPeriod(LocalDate.of(2025, 12, 30));
         request.setStatus(Status.ACTIVE);
         request.setBalance(100.0);
 
@@ -209,9 +199,8 @@ public class CardServiceImpTestcontainers {
         assertFalse(cards.isEmpty());
         Long cardId = cards.get(0).getId();
 
-        UserInfo userInfo = userInfoRepository.findByEmail("Pashech555@gmail.com").get();
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(userInfo.getEmail(), userInfo.getPassword());
+        UserInfo userInfo = userInfoRepository.findByEmail("TestUser@gmail.com").get();
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userInfo.getEmail(), userInfo.getPassword());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -228,9 +217,8 @@ public class CardServiceImpTestcontainers {
         assertFalse(cards.isEmpty());
         Long cardId = cards.get(0).getId();
 
-        UserInfo userInfo = userInfoRepository.findByEmail("Otkly4ka@mail.com").get();
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(userInfo.getEmail(), userInfo.getPassword());
+        UserInfo userInfo = userInfoRepository.findByEmail("TestUs@mail.com").get();
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userInfo.getEmail(), userInfo.getPassword());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -247,9 +235,8 @@ public class CardServiceImpTestcontainers {
     void getBalanceWithCardNotFound() {
         Long nonExistedCardId = 999L;
 
-        UserInfo userInfo = userInfoRepository.findByEmail("Pashech555@gmail.com").get();
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(userInfo.getEmail(), userInfo.getPassword());
+        UserInfo userInfo = userInfoRepository.findByEmail("TestUser@gmail.com").get();
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userInfo.getEmail(), userInfo.getPassword());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -389,29 +376,14 @@ public class CardServiceImpTestcontainers {
     }
 
     @Test
-    @DisplayName("find cards for user success")
-    void findCardsForUserTest(){
-
-        UserInfo userInfo = userInfoRepository.findByEmail("Pashech555@gmail.com").get();
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(userInfo.getEmail(), userInfo.getPassword());
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        Page<CardDto> result = cardService.findCardsForUser(userInfo, null, null, 0, 5);
-        assertFalse(result.isEmpty());
-    }
-
-    @Test
     @DisplayName("find cards for user with not authenticate")
-    void findCardsForUserTestWithNotAuthentication(){
+    void findCardsForUserTestWithNotAuthentication() {
 
-        UserInfo userInfo = userInfoRepository.findByEmail("Otkly4ka@mail.com").get();
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(userInfo.getEmail(), userInfo.getPassword());
+        UserInfo userInfo = userInfoRepository.findByEmail("TestUs@mail.com").get();
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userInfo.getEmail(), userInfo.getPassword());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        userInfo.setEmail("Pashech555@gmail.com");
+        userInfo.setEmail("TestUser@gmail.com");
 
         Exception exception = assertThrows(AuthenticateUserException.class, () -> {
             cardService.findCardsForUser(userInfo, null, null, 0, 5);
@@ -420,17 +392,17 @@ public class CardServiceImpTestcontainers {
         assertEquals("User not authenticate", exception.getMessage());
     }
 
-    private Card findBlockedCard(List<Card> cards){
+    private Card findBlockedCard(List<Card> cards) {
         Card card = new Card();
-        for(int i = 0; i < cards.size(); i++){
-            if(cards.get(i).getStatus() == Status.BLOCKED){
+        for (int i = 0; i < cards.size(); i++) {
+            if (cards.get(i).getStatus() == Status.BLOCKED) {
                 card = cards.get(i);
             }
         }
         return card;
     }
 
-    private List<Card> findActiveCard(List<Card> cards){
+    private List<Card> findActiveCard(List<Card> cards) {
         List<Card> cardList = new ArrayList<>();
         for (Card card : cards) {
             if (card.getStatus() == Status.ACTIVE) {

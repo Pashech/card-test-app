@@ -9,20 +9,20 @@ import java.time.LocalDate;
 
 public class CardSpecifications {
 
-    public static Specification<Card> withCardOwnerAndFilters(UserInfo user, String cardNumber, LocalDate cardValidityPeriod){
+    public static Specification<Card> withCardOwnerAndFilters(UserInfo user, String cardNumber, LocalDate cardValidityPeriod) {
 
         return ((root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
 
-            if(user != null){
+            if (user != null) {
                 predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get("cardOwner"), user));
             }
 
-            if(cardNumber != null && !cardNumber.isEmpty()){
+            if (cardNumber != null && !cardNumber.isEmpty()) {
                 predicate = criteriaBuilder.and(predicate, criteriaBuilder.like(root.get("cardNumber"), "%" + cardNumber + "%"));
             }
 
-            if(cardValidityPeriod != null){
+            if (cardValidityPeriod != null) {
                 predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(root.get("cardValidityPeriod"), cardValidityPeriod));
             }
 

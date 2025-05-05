@@ -1,8 +1,5 @@
 package com.example.card_test_app.card.model.exceptions;
 
-import lombok.extern.slf4j.Slf4j;
-
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -22,74 +19,73 @@ public class GlobalExceptionsHandler {
     private final Logger logger = Logger.getLogger("GlobalExceptionsHandler");
 
     @ExceptionHandler
-    public ResponseEntity<AppError> catchUserNotFoundException(UserNotFoundException exception){
+    public ResponseEntity<AppError> catchUserNotFoundException(UserNotFoundException exception) {
         logger.info(exception.getMessage());
 
         return new ResponseEntity<>(new AppError(HttpStatus.NOT_FOUND.value(), exception.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
-    public ResponseEntity<AppError> catchUsernameNotFoundException(UsernameNotFoundException exception){
+    public ResponseEntity<AppError> catchUsernameNotFoundException(UsernameNotFoundException exception) {
         logger.info(exception.getMessage());
 
         return new ResponseEntity<>(new AppError(HttpStatus.NOT_FOUND.value(), exception.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
-    public ResponseEntity<AppError> catchAuthenticateUserException(AuthenticateUserException exception){
+    public ResponseEntity<AppError> catchAuthenticateUserException(AuthenticateUserException exception) {
         logger.info(exception.getMessage());
 
         return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(), exception.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler
-    public ResponseEntity<AppError> catchCardNotFoundException(CardNotFoundException exception){
+    public ResponseEntity<AppError> catchCardNotFoundException(CardNotFoundException exception) {
         logger.info(exception.getMessage());
 
         return new ResponseEntity<>(new AppError(HttpStatus.NOT_FOUND.value(), exception.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
-    public ResponseEntity<AppError> catchRequestBlockNotFoundException(RequestBlockNotFoundException exception){
+    public ResponseEntity<AppError> catchRequestBlockNotFoundException(RequestBlockNotFoundException exception) {
         logger.info(exception.getMessage());
 
         return new ResponseEntity<>(new AppError(HttpStatus.NOT_FOUND.value(), exception.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
-    public ResponseEntity<AppError> catchCardBlockedException(CardBlockedException exception){
+    public ResponseEntity<AppError> catchCardBlockedException(CardBlockedException exception) {
         logger.info(exception.getMessage());
 
         return new ResponseEntity<>(new AppError(HttpStatus.CONFLICT.value(), exception.getMessage()), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler
-    public ResponseEntity<AppError> catchBalanceException(BalanceException exception){
+    public ResponseEntity<AppError> catchBalanceException(BalanceException exception) {
         logger.info(exception.getMessage());
 
         return new ResponseEntity<>(new AppError(HttpStatus.CONFLICT.value(), exception.getMessage()), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler
-    public ResponseEntity<AppError> catchUserAlreadyExistException(UserAlreadyExistException exception){
+    public ResponseEntity<AppError> catchUserAlreadyExistException(UserAlreadyExistException exception) {
         logger.info(exception.getMessage());
 
         return new ResponseEntity<>(new AppError(HttpStatus.CONFLICT.value(), exception.getMessage()), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler
-    public ResponseEntity<AppError> catchBadCredentialsException(BadCredentialsException exception){
+    public ResponseEntity<AppError> catchBadCredentialsException(BadCredentialsException exception) {
         logger.info(exception.getMessage());
 
         return new ResponseEntity<>(new AppError(HttpStatus.CONFLICT.value(), exception.getMessage()), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException exception){
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException exception) {
         Map<String, String> errors = new HashMap<>();
 
-        exception.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage()));
+        exception.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
 
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }

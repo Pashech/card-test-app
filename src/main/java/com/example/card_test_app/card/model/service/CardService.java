@@ -13,11 +13,18 @@ import java.util.List;
 public interface CardService {
 
     CardDto createCard(CreateCardRequest request);
+
     Page<CardDto> findCardsForUser(UserInfo userInfo, String cardNumber, LocalDate validityPeriod, int page, int size);
+
     void deleteCard(Long cardId);
+
     List<CardDto> getAllCards();
+
     Card findCardById(Long cardId);
+
     double getBalance(Long cardId);
+
     void activateCard(Long cardId);
+
     String transfer(TransferRequest transferRequest);
 }

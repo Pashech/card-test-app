@@ -9,6 +9,8 @@ import java.util.List;
 public interface CardMapper {
 
     CardDto cardToCardDto(Card card);
+
     List<CardDto> cardsToCardDto(List<Card> cards);
+
     Page<CardDto> mapPageCardToCardDto(Page<Card> pageCard);
 }

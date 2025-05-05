@@ -1,12 +1,10 @@
 package com.example.card_test_app.card.model.controller;
 
-import com.example.card_test_app.card.model.Card;
 import com.example.card_test_app.card.model.dto.CardDto;
 import com.example.card_test_app.card.model.dto.CreateCardRequest;
 import com.example.card_test_app.card.model.service.CardService;
 import com.example.card_test_app.security.model.TransferRequest;
 import com.example.card_test_app.security.model.UserInfo;
-import com.example.card_test_app.security.repository.UserInfoRepository;
 import com.example.card_test_app.security.service.UserInfoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/card")
@@ -42,7 +39,7 @@ public class CardController {
             @ApiResponse(responseCode = "404", description = "Пользователь не найден")
     })
     @PostMapping("/createCard")
-    public ResponseEntity<CardDto> createCard(@Valid @RequestBody CreateCardRequest request){
+    public ResponseEntity<CardDto> createCard(@Valid @RequestBody CreateCardRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(cardService.createCard(request));
     }
 
@@ -56,10 +53,10 @@ public class CardController {
     public ResponseEntity<Page<CardDto>> getCards(
             @RequestParam Long userId,
             @RequestParam(required = false) String cardNumber,
-            @RequestParam(required = false)LocalDate cardValidityPeriod,
+            @RequestParam(required = false) LocalDate cardValidityPeriod,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
-            ){
+    ) {
         UserInfo user = userInfoService.getUserById(userId);
         user.setId(userId);
 
@@ -71,7 +68,7 @@ public class CardController {
             @ApiResponse(responseCode = "200", description = "Список карт успешно получен")
     })
     @GetMapping("/allCards")
-    public ResponseEntity<List<CardDto>> findAllCards(){
+    public ResponseEntity<List<CardDto>> findAllCards() {
         return ResponseEntity.ok(cardService.getAllCards());
     }
 
@@ -82,7 +79,7 @@ public class CardController {
             @ApiResponse(responseCode = "401", description = "Пользователь не авторизован")
     })
     @GetMapping("/balance/{cardId}")
-    public ResponseEntity<Double> getCardBalance(@PathVariable Long cardId){
+    public ResponseEntity<Double> getCardBalance(@PathVariable Long cardId) {
         return ResponseEntity.ok(cardService.getBalance(cardId));
     }
 
@@ -93,7 +90,7 @@ public class CardController {
             @ApiResponse(responseCode = "409", description = "Карта пользоваетеля заблокирована")
     })
     @PostMapping("/transfer")
-    public ResponseEntity<String> transfer(@Valid @RequestBody TransferRequest transferRequest){
+    public ResponseEntity<String> transfer(@Valid @RequestBody TransferRequest transferRequest) {
         return ResponseEntity.ok(cardService.transfer(transferRequest));
     }
 
@@ -102,7 +99,7 @@ public class CardController {
             @ApiResponse(responseCode = "200", description = "Карта успешно активирована")
     })
     @PutMapping("/activate/{cardId}")
-    public ResponseEntity<Void> activateCard(@PathVariable Long cardId){
+    public ResponseEntity<Void> activateCard(@PathVariable Long cardId) {
         cardService.activateCard(cardId);
         return ResponseEntity.noContent().build();
     }
@@ -112,7 +109,7 @@ public class CardController {
             @ApiResponse(responseCode = "200", description = "Карта успешно удалена")
     })
     @DeleteMapping("/delete/{cardId}")
-    public ResponseEntity<Void> deleteCard(@PathVariable Long cardId){
+    public ResponseEntity<Void> deleteCard(@PathVariable Long cardId) {
         cardService.deleteCard(cardId);
         return ResponseEntity.noContent().build();
     }

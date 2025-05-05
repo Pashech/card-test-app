@@ -2,7 +2,6 @@ package com.example.card_test_app.security.controller;
 
 import com.example.card_test_app.card.model.dto.RegistrationUserDto;
 import com.example.card_test_app.security.model.AuthRequest;
-import com.example.card_test_app.security.model.UserInfo;
 import com.example.card_test_app.security.service.JwtService;
 import com.example.card_test_app.security.service.UserInfoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -44,7 +42,7 @@ public class UserController {
             @ApiResponse(responseCode = "409", description = "Пользователь с  таким email уже зарегистрирован")
     })
     @PostMapping("/registration")
-    public ResponseEntity<String> addNewUser(@Valid @RequestBody RegistrationUserDto userInfo){
+    public ResponseEntity<String> addNewUser(@Valid @RequestBody RegistrationUserDto userInfo) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userInfoService.addUser(userInfo));
     }
 
@@ -54,7 +52,7 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Пользователь не зарегистрирован")
     })
     @PostMapping("/login")
-    public ResponseEntity<String> authenticateAndGetToken(@Valid @RequestBody AuthRequest authRequest){
+    public ResponseEntity<String> authenticateAndGetToken(@Valid @RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
         );
@@ -70,7 +68,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Пользователь успешно удален")
     })
     @DeleteMapping("/deleteUser/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long userId){
+    public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {
         userInfoService.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }

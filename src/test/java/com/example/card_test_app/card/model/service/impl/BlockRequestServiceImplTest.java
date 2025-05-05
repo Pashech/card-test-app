@@ -8,16 +8,12 @@ import com.example.card_test_app.card.model.enums.Status;
 import com.example.card_test_app.card.model.exceptions.AuthenticateUserException;
 import com.example.card_test_app.card.model.exceptions.CardNotFoundException;
 import com.example.card_test_app.card.model.exceptions.RequestBlockNotFoundException;
-import com.example.card_test_app.card.model.exceptions.UserNotFoundException;
 import com.example.card_test_app.card.model.repository.BlockRequestRepository;
 import com.example.card_test_app.card.model.repository.CardRepository;
 import com.example.card_test_app.card.model.service.BlockRequestService;
-import com.example.card_test_app.card.model.service.CardService;
 import com.example.card_test_app.security.model.BlockRequest;
 import com.example.card_test_app.security.model.UserInfo;
 import com.example.card_test_app.security.repository.UserInfoRepository;
-import com.example.card_test_app.security.service.UserInfoDetails;
-import com.example.card_test_app.security.service.UserInfoService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
@@ -25,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -40,31 +35,15 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 class BlockRequestServiceImplTest {
 
+    private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest").withDatabaseName("testdb").withUsername("user").withPassword("password");
     @Autowired
     BlockRequestRepository blockRequestRepository;
-
-    @Autowired
-    CardService cardService;
-
-    @Autowired
-    UserDetailsService userDetailsService;
-
-    @Autowired
-    UserInfoService userInfoService;
-
     @Autowired
     UserInfoRepository userInfoRepository;
-
     @Autowired
     CardRepository cardRepository;
-
     @Autowired
     BlockRequestService blockRequestService;
-
-    private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest")
-            .withDatabaseName("testdb")
-            .withUsername("user")
-            .withPassword("password");
 
     @BeforeAll
     public static void setUp() {
@@ -75,7 +54,7 @@ class BlockRequestServiceImplTest {
     }
 
     @AfterEach
-    public void cleanDb(){
+    public void cleanDb() {
         cardRepository.deleteAll();
         userInfoRepository.deleteAll();
         blockRequestRepository.deleteAll();
@@ -86,17 +65,17 @@ class BlockRequestServiceImplTest {
         MockitoAnnotations.openMocks(this);
 
         UserInfo userInfo = new UserInfo();
-        userInfo.setEmail("Pashech555@gmail.com");
+        userInfo.setEmail("TestUser@gmail.com");
         userInfo.setFirstName("Pavel");
-        userInfo.setLastName("Setsko");
-        userInfo.setPassword("5908299");
+        userInfo.setLastName("Pavel");
+        userInfo.setPassword("123987456");
         userInfo.setRoles("ROLE_USER");
 
         UserInfo userInfoAdmin = new UserInfo();
-        userInfoAdmin.setEmail("Otkly4ka@mail.com");
-        userInfoAdmin.setFirstName("Yana");
-        userInfoAdmin.setLastName("Setsko");
-        userInfoAdmin.setPassword("1840827");
+        userInfoAdmin.setEmail("TestUs@mail.com");
+        userInfoAdmin.setFirstName("Ivan");
+        userInfoAdmin.setLastName("Ivan");
+        userInfoAdmin.setPassword("231879555");
         userInfoAdmin.setRoles("ROLE_ADMIN");
 
         userInfoRepository.save(userInfo);
@@ -135,15 +114,14 @@ class BlockRequestServiceImplTest {
         List<Card> allCards = cardRepository.findAll();
         List<Card> cards = findActiveCard(allCards);
         Long cardId = cards.get(0).getId();
-        UserInfo user = userInfoRepository.findByEmail("Pashech555@gmail.com").get();
+        UserInfo user = userInfoRepository.findByEmail("TestUser@gmail.com").get();
         Long userId = user.getId();
 
         BlockRequestDto request = new BlockRequestDto();
         request.setCardId(cardId);
         request.setUserId(userId);
 
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -157,12 +135,11 @@ class BlockRequestServiceImplTest {
     @DisplayName("create block request with user not authenticate")
     void createBlockRequestWithUserNotAuthenticate() {
         BlockRequestDto request = createBlockRequest();
-        UserInfo user = userInfoRepository.findByEmail("Pashech555@gmail.com").get();
+        UserInfo user = userInfoRepository.findByEmail("TestUser@gmail.com").get();
 
-        user.setEmail("Otkly4ka@mail.com");
+        user.setEmail("TestUs@mail.com");
 
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -181,7 +158,7 @@ class BlockRequestServiceImplTest {
         List<Card> allCards = cardRepository.findAll();
         List<Card> cards = findActiveCard(allCards);
         Long cardId = cards.get(0).getId();
-        UserInfo user = userInfoRepository.findByEmail("Pashech555@gmail.com").get();
+        UserInfo user = userInfoRepository.findByEmail("TestUser@gmail.com").get();
 
         request.setCardId(cardId);
         request.setUserId(user.getId());
@@ -212,7 +189,7 @@ class BlockRequestServiceImplTest {
         List<Card> allCards = cardRepository.findAll();
         List<Card> cards = findActiveCard(allCards);
         Long cardId = cards.get(0).getId();
-        UserInfo user = userInfoRepository.findByEmail("Pashech555@gmail.com").get();
+        UserInfo user = userInfoRepository.findByEmail("TestUser@gmail.com").get();
 
         request.setCardId(cardId);
         request.setUserId(user.getId());
@@ -238,7 +215,7 @@ class BlockRequestServiceImplTest {
         BlockRequest request = new BlockRequest();
 
         Long cardId = 999L;
-        UserInfo user = userInfoRepository.findByEmail("Pashech555@gmail.com").get();
+        UserInfo user = userInfoRepository.findByEmail("TestUser@gmail.com").get();
 
         request.setCardId(cardId);
         request.setUserId(user.getId());
@@ -262,12 +239,10 @@ class BlockRequestServiceImplTest {
 
     @Test
     void approveBlockRequestWithBlockRequestNotFound() {
-        BlockRequest request = new BlockRequest();
 
         List<Card> allCards = cardRepository.findAll();
         List<Card> cards = findActiveCard(allCards);
         Long cardId = cards.get(0).getId();
-        UserInfo user = userInfoRepository.findByEmail("Pashech555@gmail.com").get();
 
         ApproveRequestDto approveRequestDto = new ApproveRequestDto();
         approveRequestDto.setRequestId(999L);
@@ -280,7 +255,7 @@ class BlockRequestServiceImplTest {
         assertEquals("Blocking request not found", exception.getMessage());
     }
 
-    private List<Card> findActiveCard(List<Card> cards){
+    private List<Card> findActiveCard(List<Card> cards) {
         List<Card> cardList = new ArrayList<>();
         for (Card card : cards) {
             if (card.getStatus() == Status.ACTIVE) {
@@ -290,11 +265,11 @@ class BlockRequestServiceImplTest {
         return cardList;
     }
 
-    private BlockRequestDto createBlockRequest(){
+    private BlockRequestDto createBlockRequest() {
         List<Card> allCards = cardRepository.findAll();
         List<Card> cards = findActiveCard(allCards);
         Long cardId = cards.get(0).getId();
-        UserInfo user = userInfoRepository.findByEmail("Pashech555@gmail.com").get();
+        UserInfo user = userInfoRepository.findByEmail("TestUser@gmail.com").get();
 
         BlockRequestDto request = new BlockRequestDto();
         request.setCardId(cardId);

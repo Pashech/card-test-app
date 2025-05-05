@@ -6,9 +6,7 @@ import com.example.card_test_app.card.model.dto.BlockRequestDto;
 import com.example.card_test_app.card.model.enums.RequestBlockingStatus;
 import com.example.card_test_app.card.model.enums.Status;
 import com.example.card_test_app.card.model.exceptions.AuthenticateUserException;
-import com.example.card_test_app.card.model.exceptions.CardNotFoundException;
 import com.example.card_test_app.card.model.exceptions.RequestBlockNotFoundException;
-import com.example.card_test_app.card.model.exceptions.UserNotFoundException;
 import com.example.card_test_app.card.model.repository.BlockRequestRepository;
 import com.example.card_test_app.card.model.service.BlockRequestService;
 import com.example.card_test_app.card.model.service.CardService;
@@ -46,7 +44,7 @@ public class BlockRequestServiceImpl implements BlockRequestService {
         UserInfoDetails currentUser = (UserInfoDetails) userDetailsService.loadUserByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         UserInfo user = userInfoService.getUserById(request.getUserId());
 
-        if(!currentUser.getUsername().equals(user.getEmail())){
+        if (!currentUser.getUsername().equals(user.getEmail())) {
             throw new AuthenticateUserException("User not authenticate");
         }
 

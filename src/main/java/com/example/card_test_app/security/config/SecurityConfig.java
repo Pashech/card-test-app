@@ -30,7 +30,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
@@ -41,7 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/card/userCards", "/card/balance/{cardId}", "/block-requests/create-block-request").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
 
                         .requestMatchers("/card/createCard", "/card/allCards", "/card/activate/{cardId}",
-                                "/card/delete/{cardId}",  "/block-requests/pending",
+                                "/card/delete/{cardId}", "/block-requests/pending",
                                 "/auth/deleteUser/{userId}", "/block-requests/approve").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
@@ -53,12 +53,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());

@@ -1,12 +1,6 @@
 package com.example.card_test_app.card.model.dto;
 
 import com.example.card_test_app.card.model.enums.Status;
-import com.example.card_test_app.security.model.UserInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 
 import java.time.LocalDate;
 

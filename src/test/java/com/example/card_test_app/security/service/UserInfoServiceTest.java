@@ -1,7 +1,6 @@
 package com.example.card_test_app.security.service;
 
 import com.example.card_test_app.card.model.dto.RegistrationUserDto;
-import com.example.card_test_app.security.repository.UserInfoRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,20 +9,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 class UserInfoServiceTest {
 
 
+    private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest").withDatabaseName("testdb").withUsername("user").withPassword("password");
     @Autowired
     UserInfoService userInfoService;
-
-    private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest")
-            .withDatabaseName("testdb")
-            .withUsername("user")
-            .withPassword("password");
 
     @BeforeAll
     public static void setUp() {

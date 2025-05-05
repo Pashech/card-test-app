@@ -7,6 +7,7 @@ import com.example.card_test_app.card.model.enums.Status;
 import com.example.card_test_app.card.model.exceptions.*;
 import com.example.card_test_app.card.model.repository.CardRepository;
 import com.example.card_test_app.card.model.service.CardService;
+import com.example.card_test_app.card.model.service.EncryptService;
 import com.example.card_test_app.mapper.CardMapper;
 import com.example.card_test_app.security.model.TransferRequest;
 import com.example.card_test_app.security.model.UserInfo;
@@ -20,7 +21,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -31,13 +31,16 @@ public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final UserInfoRepository userInfoRepository;
     private final CardMapper cardMapper;
-    private final UserDetailsService userDetailsService;;
+    private final UserDetailsService userDetailsService;
+    ;
+    private final EncryptService encryptService;
 
-    public CardServiceImpl(CardRepository cardRepository, UserInfoRepository userInfoRepository, CardMapper cardMapper, UserDetailsService userDetailsService) {
+    public CardServiceImpl(CardRepository cardRepository, UserInfoRepository userInfoRepository, CardMapper cardMapper, UserDetailsService userDetailsService, EncryptService encryptService) {
         this.cardRepository = cardRepository;
         this.userInfoRepository = userInfoRepository;
         this.cardMapper = cardMapper;
         this.userDetailsService = userDetailsService;
+        this.encryptService = encryptService;
     }
 
     @Override
@@ -47,7 +50,12 @@ public class CardServiceImpl implements CardService {
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         Card card = new Card();
-        card.setCardNumber(request.getCardNumber());
+        try {
+            card.setCardNumber(encryptService.encrypt(request.getCardNumber()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         card.setCardOwner(cardOwner);
         card.setCardValidityPeriod(request.getCardValidityPeriod());
         card.setStatus(request.getStatus());
@@ -74,9 +82,9 @@ public class CardServiceImpl implements CardService {
     @Override
     public void deleteCard(Long cardId) {
         Optional<Card> card = cardRepository.findById(cardId);
-        if(card.isPresent()){
+        if (card.isPresent()) {
             cardRepository.deleteById(cardId);
-        }else {
+        } else {
             throw new CardNotFoundException("Card not found with id " + cardId);
         }
     }
@@ -127,11 +135,11 @@ public class CardServiceImpl implements CardService {
         Card toCard = cardRepository.findById(transferRequest.getToCardId()).orElseThrow(
                 () -> new CardNotFoundException("Card not found with id: " + transferRequest.getToCardId()));
 
-        if(fromCard.getStatus() == Status.BLOCKED || toCard.getStatus() == Status.BLOCKED){
+        if (fromCard.getStatus() == Status.BLOCKED || toCard.getStatus() == Status.BLOCKED) {
             throw new CardBlockedException("Card is blocked");
         }
 
-        if(fromCard.getBalance() < transferRequest.getAmount()){
+        if (fromCard.getBalance() < transferRequest.getAmount()) {
             throw new BalanceException("Insufficient funds on the source card");
         }
 

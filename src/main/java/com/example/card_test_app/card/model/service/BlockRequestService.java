@@ -9,6 +9,8 @@ import java.util.List;
 public interface BlockRequestService {
 
     BlockRequest createBlockRequest(BlockRequestDto request);
+
     List<BlockRequest> getPendingRequest();
+
     void approveBlockRequest(ApproveRequestDto request);
 }

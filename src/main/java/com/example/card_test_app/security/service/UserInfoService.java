@@ -36,7 +36,7 @@ public class UserInfoService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
     }
 
-    public String addUser(RegistrationUserDto userInfo){
+    public String addUser(RegistrationUserDto userInfo) {
 
         Optional<UserInfo> userFromDb = userInfoRepository.findByEmail(userInfo.getEmail());
 
@@ -56,12 +56,12 @@ public class UserInfoService implements UserDetailsService {
         return "User Added Successfully";
     }
 
-    public UserInfo getUserById(Long userId){
+    public UserInfo getUserById(Long userId) {
         return userInfoRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
     }
 
-    public void deleteUser(Long userId){
+    public void deleteUser(Long userId) {
         userInfoRepository.deleteById(userId);
     }
 }
