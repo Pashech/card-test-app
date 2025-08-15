@@ -40,6 +40,7 @@ public class CardController {
     })
     @PostMapping("/createCard")
     public ResponseEntity<CardDto> createCard(@Valid @RequestBody CreateCardRequest request) {
+        System.out.println("create card");
         return ResponseEntity.status(HttpStatus.CREATED).body(cardService.createCard(request));
     }
 
@@ -57,6 +58,7 @@ public class CardController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
+        System.out.println("get card");
         UserInfo user = userInfoService.getUserById(userId);
         user.setId(userId);
 
@@ -80,6 +82,7 @@ public class CardController {
     })
     @GetMapping("/balance/{cardId}")
     public ResponseEntity<Double> getCardBalance(@PathVariable Long cardId) {
+        System.out.println("all cards");
         return ResponseEntity.ok(cardService.getBalance(cardId));
     }
 
@@ -91,6 +94,7 @@ public class CardController {
     })
     @PostMapping("/transfer")
     public ResponseEntity<String> transfer(@Valid @RequestBody TransferRequest transferRequest) {
+        System.out.println("transfer");
         return ResponseEntity.ok(cardService.transfer(transferRequest));
     }
 
