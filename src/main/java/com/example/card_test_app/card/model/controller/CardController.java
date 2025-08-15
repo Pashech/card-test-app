@@ -27,6 +27,10 @@ public class CardController {
     private final CardService cardService;
     private final UserInfoService userInfoService;
 
+    static {
+        System.out.println("Hello");
+    }
+
     public CardController(CardService cardService, UserInfoService userInfoService) {
         this.cardService = cardService;
         this.userInfoService = userInfoService;
