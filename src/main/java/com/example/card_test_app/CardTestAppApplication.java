@@ -9,10 +9,6 @@ public class CardTestAppApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(CardTestAppApplication.class, args);
         System.out.println("Hello");
-        System.out.println("Hello");
-        System.out.println("Hello");
-        System.out.println("Hello");
-        System.out.println("Hello");
 
 	}
 
