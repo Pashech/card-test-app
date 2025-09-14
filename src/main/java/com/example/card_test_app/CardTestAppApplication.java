@@ -10,8 +10,14 @@ public class CardTestAppApplication {
 		SpringApplication.run(CardTestAppApplication.class, args);
         System.out.println("Hello");
 
-        for (int i = 0; i < 5; i++) {
+        int i = 0;
+        while(i < 4) {
             System.out.println(i);
+            i++;
+        }
+
+        for(int j =0; j < 2; j++) {
+            System.out.println("Hello");
         }
 
         for (int i = 0; i < 5; i++) {
